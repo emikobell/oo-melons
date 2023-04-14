@@ -27,7 +27,7 @@ class AbstractMelonOrder:
 
         self.shipped = True
 
-class DomesticMelonOrder:
+class DomesticMelonOrder(AbstractMelonOrder):
     """A melon order within the USA."""
     order_type = "domestic"
     tax = 0.08
@@ -60,7 +60,11 @@ class InternationalMelonOrder(AbstractMelonOrder):
         return self.country_code
     
 
-# To ask at queue tomorrow:
-# Does each order mean ALL melon orders or just orders that the US government makes?
-# Does US government orders span both domestic and international orders?
-# Code review for Part 1 & 2
+class GovernmentMelonOrder(AbstractMelonOrder):
+
+    tax = 0
+    passed_inspection = False
+    order_type = None
+
+    def mark_inspection(self, passed):
+        self.passed_inspection = passed
