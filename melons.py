@@ -1,20 +1,36 @@
+from random import randint
+from datetime import datetime
+
 """Classes for melon orders."""
 
 class AbstractMelonOrder:
+
+
     def __init__(self,species, qty):
         self.species = species
         self.qty = qty
         self.shipped = False
+        self.base_price = None
 
+
+    def get_base_price(self):
+        self.base_price = randint(5,9)
+
+        hour_now = datetime.now().hour
+        weekday_now = datetime.now().weekday()
+
+        if hour_now > 7 and hour_now < 11 and weekday_now >= 0 and weekday_now <5:
+            self.base_price += 4
 
     def get_total(self):
         """Calculate price, including tax."""
-        base_price = 5
+
+        self.get_base_price()
 
         if self.species == "Christmas":
-            base_price = base_price *1.5
+            self.base_price = self.base_price *1.5
         
-        total = (1 + self.tax) * self.qty * base_price
+        total = (1 + self.tax) * self.qty * self.base_price
 
         if self.qty < 10 and self.order_type == 'international':
             total += 3
@@ -29,18 +45,9 @@ class AbstractMelonOrder:
 
 class DomesticMelonOrder(AbstractMelonOrder):
     """A melon order within the USA."""
+
     order_type = "domestic"
     tax = 0.08
-
-    # def __init__(self, species, qty):
-    #     """Initialize melon order attributes."""
-
-    #     self.species = species
-    #     self.qty = qty
-    #     self.shipped = False
-        # self.order_type = "domestic"
-        # self.tax = 0.08
-
 
 
 class InternationalMelonOrder(AbstractMelonOrder):
@@ -48,6 +55,7 @@ class InternationalMelonOrder(AbstractMelonOrder):
     
     order_type = "international"
     tax = 0.17
+
     def __init__(self, species, qty, country_code):
         """Initialize melon order attributes."""
         super().__init__(species,qty)
@@ -63,8 +71,11 @@ class InternationalMelonOrder(AbstractMelonOrder):
 class GovernmentMelonOrder(AbstractMelonOrder):
 
     tax = 0
-    passed_inspection = False
-    order_type = None
+    order_type = "government"
+
+    def __init__(self, species, quantity):
+        super().__init__(species, quantity)
+        self.passed_inspection = False
 
     def mark_inspection(self, passed):
         self.passed_inspection = passed
